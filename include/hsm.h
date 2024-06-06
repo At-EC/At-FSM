@@ -9,8 +9,6 @@
 #define _HSM_H_
 
 #include "typedef.h"
-#include "linker.h"
-#include "postcode.h"
 
 #ifdef __cplusplus
 extern "C" {

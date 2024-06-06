@@ -1,0 +1,33 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  CMake-Build:
+    name: Kernal CMake Remote Building
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE_DATA_PATH: coverage-data/coverage.info
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install GCC
+        shell: bash
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install build-essential
+
+      - name: Build Kernal Native CMake
+        shell: bash
+        working-directory: .github/remote_build/native_gcc
+        run: |
+          cmake -S . -B build
+          cmake --build build
+          
+#      - name: Upload coverage reports to Codecov
+#        uses: codecov/codecov-action@v3
+#        env:
+#          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+#
+          
