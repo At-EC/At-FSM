@@ -1,6 +1,6 @@
-# [At-FSM](https://github.com/At-EC/At-FSM) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/At-EC/At-FSM/blob/main/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/At-EC/At-FSM/tree/main/.github/Welcome_PRs.md) <a href="https://github.com/At-EC/At-FSM/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/At-EC/At-FSM?color=success"></a> [![Discord](https://img.shields.io/discord/1208405601994932274?logo=discord)](https://discord.gg/AxfF9aH58G) <a href="https://github.com/At-EC/At-FSM/actions"><img alt="Build" src="https://github.com/At-EC/At-FSM/workflows/Build/badge.svg"></a> [![GitHub Release](https://img.shields.io/github/v/release/At-EC/At-FSM)](./release-note.md)
+# <img src="https://github.com/At-EC/At-FSM/blob/main/.github/picture/@-EC.png" alt="@-EC" width="25" height="25" />[At-FSM](https://github.com/At-EC/At-FSM) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/At-EC/At-FSM/blob/main/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/At-EC/At-FSM/tree/main/.github/Welcome_PRs.md) <a href="https://github.com/At-EC/At-FSM/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/At-EC/At-FSM?color=success"></a> [![Discord](https://img.shields.io/discord/1208405601994932274?logo=discord)](https://discord.gg/AxfF9aH58G) <a href="https://github.com/At-EC/At-FSM/actions"><img alt="Build" src="https://github.com/At-EC/At-FSM/workflows/Build/badge.svg"></a> [![GitHub Release](https://img.shields.io/github/v/release/At-EC/At-FSM)](./release-note.md)
 
-At-FSM([@ Finite State Machine](https://github.com/At-EC/At-FSM)) is an open and user-friendly embedded Finite State Machine(FSM) designed for various embedded controllers' supporting, as it's beginning it will be an important member of the At-EC family.
+At-FSM ([@ Finite State Machine](https://github.com/At-EC/At-FSM)) is an open and user-friendly embedded Finite State Machine(FSM) designed for various embedded controllers' supporting, as it's beginning it will be an important member of the At-EC family.
 
 The goal of the system is to explore and try to provide a range of features and capabilities to support and simplify your embedded firmware implementation.
 
@@ -16,6 +16,31 @@ Welcome PRs! If you are interested in contributing, Pls join us at [Discord](htt
 
 ## Introduce
 
+### Primitive State Machine
+
+We specify a transducer (a process that takes as input a sequence of values which serve as inputs to the state machine, and returns as output the set of outputs of the machine for each input) as a state machine by specifying:
+ - a set of states, S,
+ - a set of inputs, I, also called the input signal,
+ - a set of outputs, O, also called the output result,
+ - a state input action, O = o(s, i), that maps the current state accept a input signal, that triggers a state transition.
+ - a next-state transition, O = n(s, i), that maps the current state accept a input signal, that triggers a state transition.
+ 
+ Here is a Primitive State Machine (PSM), to give you an idea of the usage of the systems we are considering.
+
+<p align="center">
+
+<img src="https://github.com/At-EC/At-FSM/blob/main/.github/picture/psm_diagram.png" />
+
+</p>
+
+In the primitive state machine system, it alway has an active state which can accept the current system event signal. There are no inherit rules betweent states, so the event signal only can drive the active state.
+The state transition can be triggered by the user specific event signal. when the transition is happening, the current state will receive the sytem defined signal `PSM_SIGNAL_EXIT`, and the next state will receive another sytem defined signal `PSM_SIGNAL_ENTRY`. after that the next state will be enabled. 
+
+<p align="center">
+
+<img src="https://github.com/At-EC/At-FSM/blob/main/.github/picture/psm_state.png" />
+
+</p>
 
 ## License
 

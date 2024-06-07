@@ -17,7 +17,7 @@ extern "C" {
  * @param pInitManager The PSM manager context pointer.
  * @param pInitStateList The user PSM state list table.
  * @param initInstance The first start state' instance.
- * @param pTransucerFunc The transucer function pointer for state transaction handler.
+ * @param pTransucerFunc The transucer function pointer for state transition handler.
  *
  * @return The value of PSM init operaton result.
  */
@@ -237,14 +237,14 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
 }
 
 /**
- * @brief The HSM state transaction.
+ * @brief The HSM state transition.
  *
  * @param pStateManager The PSM manager context pointer.
  * @param next The expected state instance.
  *
  * @return The value of operation result.
  */
-hsm_result_t hsm_transaction(hsm_state_manager_t *pStateManager, hsm_instance_t next)
+hsm_result_t hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next)
 {
     if (next <= pStateManager->number) {
         return HSM_RESULT_INVALID_ARGUMENT;

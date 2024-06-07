@@ -75,7 +75,7 @@ const char_t *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance
 psm_result_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
 psm_instance_t psm_inst_current_get(psm_state_manager_t *pStateManager);
 psm_result_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input);
-void *psm_transaction(psm_state_manager_t *pStateManager, psm_instance_t next);
+void *psm_transition(psm_state_manager_t *pStateManager, psm_instance_t next);
 
 #ifdef __cplusplus
 }

@@ -10,7 +10,7 @@
 
 #include "typedef.h"
 
-#ifdef __cplusplus
+#ifdef transition
 extern "C" {
 #endif
 
@@ -78,9 +78,9 @@ u32_t hsm_inst_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance
 hsm_instance_t hsm_inst_middleware_get(hsm_state_manager_t *pStateManager);
 hsm_instance_t hsm_inst_current_get(hsm_state_manager_t *pStateManager);
 hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input);
-hsm_result_t hsm_transaction(hsm_state_manager_t *pStateManager, hsm_instance_t next);
+hsm_result_t hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next);
 
-#ifdef __cplusplus
+#ifdef transition
 }
 #endif
 

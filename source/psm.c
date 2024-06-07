@@ -17,7 +17,7 @@ extern "C" {
  * @param pInitManager The PSM manager context pointer.
  * @param pInitStateList The user PSM state list table.
  * @param initInstance The first start state' instance.
- * @param pTransucerFunc The transucer function pointer for state transaction handler.
+ * @param pTransucerFunc The transucer function pointer for state transition handler.
  *
  * @return The value of PSM init operaton result.
  */
@@ -165,14 +165,14 @@ psm_result_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_
 }
 
 /**
- * @brief The PSM state transaction.
+ * @brief The PSM state transition.
  *
  * @param pStateManager The PSM manager context pointer.
  * @param next The expected state instance.
  *
  * @return The value of operation result.
  */
-void *psm_transaction(psm_state_manager_t *pStateManager, psm_instance_t next)
+void *psm_transition(psm_state_manager_t *pStateManager, psm_instance_t next)
 {
     if (pStateManager->number >= next) {
         return (void *)PSM_FAULT_ERROR;

@@ -123,13 +123,13 @@ static hsm_state_manager_t g_hsm_mngr_context = {0u};
 int main(void)
 {
     psm_init(&g_psm_mngr_context, &g_psm_state_init[0], PSM_INST_0, psm_transducer_handler);
-	
+
     psm_state_input_t data = {0};
     data.signal = PSM_SIGNAL_1;
     psm_activities(&g_psm_mngr_context, data);
-	
+
     hsm_init(&g_hsm_mngr_context, &g_hsm_state_init[0], HSM_INST_210, hsm_transducer_handler);
-	
+
     hsm_state_input_t input = {0};
     input.signal = HSM_SIGNAL_INIT;
     hsm_activities(&g_hsm_mngr_context, input);
@@ -162,7 +162,7 @@ static void* psm_state_1(psm_state_input_t input)
         }
         case PSM_SIGNAL_1:
         {
-            return psm_transaction(&g_psm_mngr_context, PSM_INST_1);
+            return psm_transition(&g_psm_mngr_context, PSM_INST_1);
         }
         case PSM_SIGNAL_2:
         {
@@ -407,7 +407,7 @@ static hsm_result_t hsm_state_21(hsm_state_input_t input)
         }
         case HSM_SIGNAL_1:
         {
-            //return hsm_transaction(&g_hsm_mngr_context, HSM_INST_2);
+            //return hsm_transition(&g_hsm_mngr_context, HSM_INST_2);
             break;
         }
         case HSM_SIGNAL_2:
@@ -443,7 +443,7 @@ static hsm_result_t hsm_state_210(hsm_state_input_t input)
         }
         case HSM_SIGNAL_1:
         {
-            return hsm_transaction(&g_hsm_mngr_context, HSM_INST_100);
+            return hsm_transition(&g_hsm_mngr_context, HSM_INST_100);
         }
         case HSM_SIGNAL_2:
         {
