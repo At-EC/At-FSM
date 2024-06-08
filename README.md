@@ -82,7 +82,6 @@ static psm_state_t g_psm_state_init[] = {
                     .id = 0u,
                     .pName = "psm_state_1",
                     .pEntryFunc = psm_state_1 },
-
     [PSM_INST_1] = {.instance = PSM_INST_1,
                     .id = 1u,
                     .pName = "psm_state_2",
@@ -168,7 +167,6 @@ static hsm_state_t g_hsm_state_init[] = {
                     .id = 0,
                     .pName = "hsm_state_0",
                     .pEntryFunc = hsm_state_0 },
-
     [HSM_INST_1] = {.pMasterState = NULL,
                     .instance = HSM_INST_1,
                     .id = 1,
