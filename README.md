@@ -16,8 +16,6 @@ Welcome PRs! If you are interested in contributing, Pls join us at [Discord](htt
 
 ## Introduce
 
-### Primitive State Machine
-
 We specify a transducer (a process that takes as input a sequence of values which serve as inputs to the state machine, and returns as output the set of outputs of the machine for each input) as a state machine by specifying:
  - a set of states, S,
  - a set of inputs, I, also called the input signal,
@@ -33,14 +31,26 @@ We specify a transducer (a process that takes as input a sequence of values whic
 
 </p>
 
+ Here is a Hierarchical State Machine (HSM), to give you an idea of the usage of the systems we are considering.
+
+<p align="center">
+
+<img src="https://github.com/At-EC/At-FSM/blob/main/.github/picture/hsm_diagram.png" />
+
+</p>
+
 In the primitive state machine system, it alway has an active state which can accept the current system event signal. There are no inherit rules betweent states, so the event signal only can drive the active state.
-The state transition can be triggered by the user specific event signal. when the transition is happening, the current state will receive the sytem defined signal `PSM_SIGNAL_EXIT`, and the next state will receive another sytem defined signal `PSM_SIGNAL_ENTRY`. after that the next state will be enabled. 
+The state transition can be triggered by the user specific event signal. when the transition is happening, the current state will receive the system defined signal `PSM_SIGNAL_EXIT`, and the next state will receive another system defined signal `PSM_SIGNAL_ENTRY`. after that the next state will be enabled. 
 
 <p align="center">
 
 <img src="https://github.com/At-EC/At-FSM/blob/main/.github/picture/psm_state.png" />
 
 </p>
+
+The hierarchical state machine system also have the system defined signal `HSM_SIGNAL_EXIT` and `HSM_SIGNAL_ENTRY` for the system transition internal use. A bit difference is that the HSM has another system specific signal `HSM_SIGNAL_INIT` for the next state init purpose.
+The HSM signal direction always is from master to slave, The higher layer state always has a high priority to accept the signal. it means if the higher layer state accept the signal and start to transition to another state, this signal will be blocked at the higher layer state, and the lower layer state has no choice to receive it. 
+If the direction of the transition is from the slave to master, the children states will receive the signal `HSM_SIGNAL_EXIT`. otherwise, the children states will accept the signal `HSM_SIGNAL_ENTRY` and the target state will accept the signal `HSM_SIGNAL_INIT`.
 
 ## License
 
