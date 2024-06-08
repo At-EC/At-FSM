@@ -12,18 +12,28 @@
 extern "C" {
 #endif
 
+/* The PSM user specific signal */
 enum {
     PSM_SIGNAL_1 = PSM_SIGNAL_USER_DEFINE,
     PSM_SIGNAL_2,
     PSM_SIGNAL_3,
 };
 
+/* The PSM state instance id */
 enum {
     PSM_INST_0 = 0,
     PSM_INST_1,
     PSM_INST_2,
 };
 
+/* The HSM user specific signal */
+enum {
+    HSM_SIGNAL_1 = HSM_SIGNAL_USER_DEFINE,
+    HSM_SIGNAL_2,
+    HSM_SIGNAL_3,
+};
+
+/* The HSM user specific signal */
 enum {
     HSM_INST_0 = 0,
     HSM_INST_1,
@@ -33,12 +43,6 @@ enum {
     HSM_INST_210,
     HSM_INST_10,
     HSM_INST_100,
-};
-
-enum {
-    HSM_SIGNAL_1 = HSM_SIGNAL_USER_DEFINE,
-    HSM_SIGNAL_2,
-    HSM_SIGNAL_3,
 };
 
 static void* psm_state_1(psm_state_input_t input);
@@ -56,6 +60,7 @@ static hsm_result_t hsm_state_10(hsm_state_input_t input);
 static hsm_result_t hsm_state_100(hsm_state_input_t input);
 static hsm_result_t hsm_transducer_handler(const hsm_state_t *pStateContext, hsm_instance_t from, hsm_instance_t to, hsm_state_input_t input);
 
+/* The PSM states' init tables */
 static psm_state_t g_psm_state_init[] = {
     [PSM_INST_0] = {.instance = PSM_INST_0,
                     .id = 0u,
@@ -72,6 +77,7 @@ static psm_state_t g_psm_state_init[] = {
                     .pEntryFunc = psm_state_3 },
 };
 
+/* The HSM states' init tables */
 static hsm_state_t g_hsm_state_init[] = {
     [HSM_INST_0] = {.pMasterState = NULL,
                     .instance = HSM_INST_0,
@@ -117,7 +123,10 @@ static hsm_state_t g_hsm_state_init[] = {
 
 };
 
+/* The PSM state manager */
 static psm_state_manager_t g_psm_mngr_context = {0u};
+
+/* The HSM state manager */
 static hsm_state_manager_t g_hsm_mngr_context = {0u};
 
 int main(void)

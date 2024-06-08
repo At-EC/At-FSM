@@ -52,6 +52,209 @@ The hierarchical state machine system also have the system defined signal `HSM_S
 The HSM signal direction always is from master to slave, The higher layer state always has a high priority to accept the signal. it means if the higher layer state accept the signal and start to transition to another state, this signal will be blocked at the higher layer state, and the lower layer state has no choice to receive it. 
 If the direction of the transition is from the slave to master, the children states will receive the signal `HSM_SIGNAL_EXIT`. otherwise, the children states will accept the signal `HSM_SIGNAL_ENTRY` and the target state will accept the signal `HSM_SIGNAL_INIT`.
 
+## PSM Examples
+
+The [main.c](./.github/remote_build/native_gcc/main.c) has a sample code for github action gcc build check. You can check it how to use and perform it in your embedded controller system.
+
+The following sample codes illustrate how to define a PSM state init tables and a demo state entry function:
+
+```c
+
+#include "psm.h"
+
+/* The PSM user specific signal */
+enum {
+    PSM_SIGNAL_1 = PSM_SIGNAL_USER_DEFINE,
+    PSM_SIGNAL_2,
+    PSM_SIGNAL_3,
+};
+
+/* The PSM state instance id */
+enum {
+    PSM_INST_0 = 0,
+    PSM_INST_1,
+    PSM_INST_2,
+};
+
+/* The PSM states' init tables */
+static psm_state_t g_psm_state_init[] = {
+    [PSM_INST_0] = {.instance = PSM_INST_0,
+                    .id = 0u,
+                    .pName = "psm_state_1",
+                    .pEntryFunc = psm_state_1 },
+
+    [PSM_INST_1] = {.instance = PSM_INST_1,
+                    .id = 1u,
+                    .pName = "psm_state_2",
+                    .pEntryFunc = psm_state_2 },
+    [PSM_INST_2] = {.instance = PSM_INST_2,
+                    .id = 2u,
+                    .pName = "psm_state_1",
+                    .pEntryFunc = psm_state_3 },
+};
+
+/* The PSM state manager */
+static psm_state_manager_t g_psm_mngr_context = {0u};
+
+```
+
+After you implementing the PSM states init tables as above exmaple code, you should focus on your application design for the state entry function and the input signal management.
+
+```c
+
+/* The PSM state entry function */
+static void* psm_state_1(psm_state_input_t input)
+{
+    switch(input.signal)
+    {
+        case PSM_SIGNAL_ENTRY: /* The system internal defined signal for transition */
+        case PSM_SIGNAL_EXIT: 
+        {
+            break;
+        }
+        case PSM_SIGNAL_1: /* User defined event signal */
+        {
+            /* Transition: To the state PSM_INST_2 */
+            return psm_transition(&g_psm_mngr_context, PSM_INST_2); 
+        }
+        case PSM_SIGNAL_2:
+        {
+            break;
+        }
+        case PSM_SIGNAL_3:
+        {
+            break;
+        }
+        default:
+            break;
+    }
+
+    return PSM_ACTION_DONE; /* No futher state action */
+}
+
+```
+
+## HSM Examples
+
+The following sample codes illustrate how to define a HSM state init tables and a demo state entry function:
+
+```c
+
+#include "hsm.h"
+
+/* The HSM user specific signal */
+enum {
+    HSM_SIGNAL_1 = HSM_SIGNAL_USER_DEFINE,
+    HSM_SIGNAL_2,
+    HSM_SIGNAL_3,
+};
+
+/* The HSM user specific signal */
+enum {
+    HSM_INST_0 = 0,
+    HSM_INST_1,
+    HSM_INST_2,
+    HSM_INST_20,
+    HSM_INST_21,
+    HSM_INST_210,
+    HSM_INST_10,
+    HSM_INST_100,
+};
+
+/* The HSM states' init tables */
+static hsm_state_t g_hsm_state_init[] = {
+    [HSM_INST_0] = {.pMasterState = NULL, /* The master pointer is NULL for the root state */
+                    .instance = HSM_INST_0,
+                    .id = 0,
+                    .pName = "hsm_state_0",
+                    .pEntryFunc = hsm_state_0 },
+
+    [HSM_INST_1] = {.pMasterState = NULL,
+                    .instance = HSM_INST_1,
+                    .id = 1,
+                    .pName = "hsm_state_1",
+                    .pEntryFunc = hsm_state_1 },
+    [HSM_INST_2] = {.pMasterState = NULL,
+                    .instance = HSM_INST_2,
+                    .id = 2,
+                    .pName = "hsm_state_2",
+                    .pEntryFunc = hsm_state_2 },
+    [HSM_INST_20] = {.pMasterState = &g_hsm_state_init[HSM_INST_2], /* This state is HSM_INST_2 children */
+                     .instance = HSM_INST_20,
+                     .id = 20,
+                     .pName = "hsm_state_20",
+                     .pEntryFunc = hsm_state_20 },
+    [HSM_INST_21] = {.pMasterState = &g_hsm_state_init[HSM_INST_2],
+                     .instance = HSM_INST_21,
+                     .id = 21,
+                     .pName = "hsm_state_21",
+                     .pEntryFunc = hsm_state_21 },
+    [HSM_INST_210] = {.pMasterState = &g_hsm_state_init[HSM_INST_21],
+                     .instance = HSM_INST_210,
+                     .id = 210,
+                     .pName = "hsm_state_210",
+                     .pEntryFunc = hsm_state_210 },
+    [HSM_INST_10] = {.pMasterState = &g_hsm_state_init[HSM_INST_1],
+                     .instance = HSM_INST_10,
+                     .id = 10,
+                     .pName = "hsm_state_10",
+                     .pEntryFunc = hsm_state_10 },
+    [HSM_INST_100] = {.pMasterState = &g_hsm_state_init[HSM_INST_10],
+                      .instance = HSM_INST_100,
+                      .id = 100,
+                      .pName = "hsm_state_100",
+                      .pEntryFunc = hsm_state_100 },
+
+};
+
+/* The HSM state manager */
+static hsm_state_manager_t g_hsm_mngr_context = {0u};
+
+
+```
+
+After you implementing the PSM states init tables as above exmaple code, you should focus on your application design for the state entry function and the input signal management.
+
+```c
+
+/* The HSM state entry function */
+static hsm_result_t hsm_state_210(hsm_state_input_t input)
+{
+    switch(input.signal)
+    {
+        case HSM_SIGNAL_ENTRY: /* The system internal defined signal for transition */
+        case HSM_SIGNAL_EXIT:
+        {
+            break;
+        }
+        case HSM_SIGNAL_INIT: /* The system internal defined signal for transition */
+        {
+            break;
+        }
+        case HSM_SIGNAL_1:
+        {
+            /* Transition: to the state HSM_INST_100 */
+            return hsm_transition(&g_hsm_mngr_context, HSM_INST_100);
+        }
+        case HSM_SIGNAL_2:
+        {
+            break;
+        }
+        case HSM_SIGNAL_3:
+        {
+            break;
+        }
+        default:
+            break;
+    }
+
+    return HSM_ACTION_DONE; /* No futher state action */
+}
+
+```
+
+Note that: The details are shared in the [main.c](./.github/remote_build/native_gcc/main.c).
+
 ## License
 
 The At-FSM is completely open-source, can be used in commercial applications for free, does not require the disclosure of code, and has no potential commercial risk. License information and copyright information can generally be seen at the beginning of the code:
