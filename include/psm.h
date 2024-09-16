@@ -52,7 +52,7 @@ typedef struct psm_state {
     pPsmEntryFunc_t pEntryFunc;
 } psm_state_t;
 
-typedef u32p_t (*pPsmTransducerFunc_t)(const psm_state_t *, psm_instance_t, psm_instance_t, psm_state_input_t);
+typedef i32p_t (*pPsmTransducerFunc_t)(const psm_state_t *, psm_instance_t, psm_instance_t, psm_state_input_t);
 
 typedef struct {
     const psm_state_t *pInitState;

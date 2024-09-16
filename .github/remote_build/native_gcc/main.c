@@ -48,7 +48,7 @@ enum {
 static void* psm_state_1(psm_state_input_t input);
 static void* psm_state_2(psm_state_input_t input);
 static void* psm_state_3(psm_state_input_t input);
-static u32_t psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input);
+static i32_t psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input);
 
 static hsm_result_t hsm_state_0(hsm_state_input_t input);
 static hsm_result_t hsm_state_1(hsm_state_input_t input);
@@ -149,7 +149,7 @@ int main(void)
     while(1) {};
 }
 
-static u32_t psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input)
+static i32_t psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input)
 {
 	if (pStateContext) {
 		printf("psm_transducer_handler: from %d to %d, signal: %d\n", from, to, input.signal);

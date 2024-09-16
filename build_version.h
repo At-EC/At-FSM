@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#define AT_FSM_FW_VERSION "1.0.0"
+#define AT_FSM_FW_VERSION "1.0.2"
 
 #ifdef __cplusplus
 }
