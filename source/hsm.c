@@ -4,12 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  **/
-
 #include "hsm.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Initialize a new HSM manager object.
@@ -21,19 +16,19 @@ extern "C" {
  *
  * @return The value of PSM init operaton result.
  */
-hsm_result_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pInitStateList, hsm_instance_t initInstance,
-                      pHsmTransducerFunc_t pTransucerFunc)
+i32_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pInitStateList, hsm_instance_t initInstance,
+               pHsmTransducerFunc_t pTransucerFunc)
 {
     if (!pInitManagerContext) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     if (!pInitStateList) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     if (DIMOF(pInitStateList) >= (hsm_signal_t)HSM_STATE_INSTANCE_INVALID) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     pInitManagerContext->pInitState = pInitStateList;
@@ -42,7 +37,7 @@ hsm_result_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_
     pInitManagerContext->middleware = initInstance;
     pInitManagerContext->pTransucerFunc = pTransucerFunc;
 
-    return HSM_RESULT_PASS;
+    return 0;
 }
 
 /**
@@ -53,12 +48,12 @@ hsm_result_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_
  *
  * @return The value of PSM_RESULT_PASS indicates the instance is valid.
  */
-hsm_result_t hsm_state_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
+i32_t hsm_state_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
 {
     if (!pStateManager) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
-    return ((instance < pStateManager->number) ? (HSM_RESULT_PASS) : (HSM_RESULT_INVALID_DATA));
+    return ((instance < pStateManager->number) ? (0) : (EOR_INVALID_DATA));
 }
 
 /**
@@ -91,10 +86,10 @@ const char_t *hsm_state_nameGet(hsm_state_manager_t *pStateManager, hsm_instance
 u32_t hsm_state_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
 {
     if (!pStateManager) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
     if (hsm_state_isInvalid(pStateManager, instance)) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
     return pStateManager->pInitState[instance].id;
 }
@@ -137,10 +132,10 @@ hsm_instance_t hsm_inst_current_get(hsm_state_manager_t *pStateManager)
  *
  * @return The value of operation result.
  */
-hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input)
+i32_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input)
 {
     if (!pStateManager) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     hsm_state_t *pCurState = NULL;
@@ -148,13 +143,13 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
     hsm_state_t *pTmpTarget = NULL;
     hsm_state_t *pNewState = NULL;
     hsm_state_input_t sv_input = {0u};
-    b_t root = FALSE;
-    hsm_result_t ret = HSM_ACTION_DONE;
+    b_t root = false;
+    i32_t ret = HSM_ACTION_DONE;
 
     if (pStateManager->current == HSM_STATE_INSTANCE_ROOT) {
         pTmpState = (hsm_state_t *)&pStateManager->pInitState[pStateManager->middleware];
         sv_input = input;
-        root = TRUE;
+        root = true;
     } else {
         pCurState = (hsm_state_t *)&pStateManager->pInitState[pStateManager->current];
         pTmpState = pCurState;
@@ -168,7 +163,7 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
         if (pStateManager->current != HSM_STATE_INSTANCE_ROOT) {
             pStateManager->middleware = pTmpState->instance;
             if (pTmpState->pEntryFunc(input)) {
-                return HSM_RESULT_FAULT_ERROR;
+                return EOR_FAULT_ERROR;
             }
         } else {
             pStateManager->current = pStateManager->middleware;
@@ -178,13 +173,13 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
             pStateManager->middleware = pTmpState->instance;
             input.signal = HSM_SIGNAL_INIT;
             if (pTmpState->pEntryFunc(input)) {
-                return HSM_RESULT_FAULT_ERROR;
+                return EOR_FAULT_ERROR;
             }
 
             if ((root) && (sv_input.signal != HSM_SIGNAL_INIT)) {
                 input = sv_input;
                 if (pTmpState->pEntryFunc(input)) {
-                    return HSM_RESULT_FAULT_ERROR;
+                    return EOR_FAULT_ERROR;
                 }
             }
         }
@@ -211,7 +206,7 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
             while ((pTmpFromState != pSameMasterState) && (pTmpFromState != pNewState) && (ret == HSM_ACTION_DONE)) {
                 pStateManager->middleware = pTmpFromState->instance;
                 if (pTmpFromState->pEntryFunc(input)) {
-                    return HSM_RESULT_FAULT_ERROR;
+                    return EOR_FAULT_ERROR;
                 }
                 pTmpFromState = pTmpFromState->pMasterState;
             }
@@ -219,7 +214,7 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
             if (pStateManager->pTransucerFunc) {
                 hsm_instance_t inst = (pCurState) ? (pCurState->instance) : (HSM_STATE_INSTANCE_ROOT);
                 if (pStateManager->pTransucerFunc(pStateManager->pInitState, inst, pStateManager->current, sv_input)) {
-                    return HSM_RESULT_FAULT_ERROR;
+                    return EOR_FAULT_ERROR;
                 }
             }
 
@@ -244,16 +239,12 @@ hsm_result_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_
  *
  * @return The value of operation result.
  */
-hsm_result_t hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next)
+i32_t hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next)
 {
     if (next <= pStateManager->number) {
-        return HSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     pStateManager->current = next;
-    return HSM_RESULT_PASS;
+    return 0;
 }
-
-#ifdef __cplusplus
-}
-#endif

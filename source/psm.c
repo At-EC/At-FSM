@@ -4,12 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  **/
-
 #include "psm.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Initialize a new PSM manager object.
@@ -21,19 +16,19 @@ extern "C" {
  *
  * @return The value of PSM init operaton result.
  */
-psm_result_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, psm_instance_t initInstance,
-                      pPsmTransducerFunc_t pTransucerFunc)
+i32_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, psm_instance_t initInstance,
+               pPsmTransducerFunc_t pTransucerFunc)
 {
     if (!pInitManager) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     if (!pInitStateList) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     if (DIMOF(pInitStateList) > PSM_STATE_INSTANCE_INVALID) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     pInitManager->pInitState = pInitStateList;
@@ -43,7 +38,7 @@ psm_result_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pIni
     pInitManager->exit_signal = PSM_SIGNAL_UNKNOWN;
     pInitManager->pTransucerFunc = pTransucerFunc;
 
-    return PSM_RESULT_PASS;
+    return 0;
 }
 
 /**
@@ -52,14 +47,14 @@ psm_result_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pIni
  * @param pStateManager The PSM manager context pointer.
  * @param instance The instance number of the state.
  *
- * @return The value of PSM_RESULT_PASS indicates the instance is valid.
+ * @return The value of 0 indicates the instance is valid.
  */
-psm_result_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance)
+i32_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance)
 {
     if (!pStateManager) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
-    return ((instance < pStateManager->number) ? (PSM_RESULT_PASS) : (PSM_RESULT_INVALID_DATA));
+    return ((instance < pStateManager->number) ? (0) : (EOR_INVALID_DATA));
 }
 
 /**
@@ -89,13 +84,13 @@ const char_t *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance
  *
  * @return The value of state id number.
  */
-psm_result_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance)
+i32_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance)
 {
     if (!pStateManager) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
     if (psm_state_inst_isInvalid(pStateManager, instance)) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
     return pStateManager->pInitState[instance].id;
 }
@@ -123,10 +118,10 @@ psm_instance_t psm_inst_current_get(psm_state_manager_t *pStateManager)
  *
  * @return The value of operation result.
  */
-psm_result_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input)
+i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input)
 {
     if (!pStateManager) {
-        return PSM_RESULT_INVALID_ARGUMENT;
+        return EOR_INVALID_ARGUMENT;
     }
 
     pPsmEntryFunc_t pNextEntry = NULL;
@@ -161,7 +156,7 @@ psm_result_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_
         pNextEntry = (pPsmEntryFunc_t)pStateManager->pInitState[pStateManager->current].pEntryFunc(input);
     } while (pNextEntry && ((u32_t)pNextEntry != PSM_FAULT_ERROR));
 
-    return (((u32_t)pNextEntry != PSM_FAULT_ERROR) ? (PSM_RESULT_PASS) : (PSM_RESULT_FAULT_ERROR));
+    return (((u32_t)pNextEntry != PSM_FAULT_ERROR) ? (0) : (EOR_FAULT_ERROR));
 }
 
 /**
@@ -181,7 +176,3 @@ void *psm_transition(psm_state_manager_t *pStateManager, psm_instance_t next)
     pStateManager->current = next;
     return (void *)pStateManager->pInitState[next].pEntryFunc;
 }
-
-#ifdef __cplusplus
-}
-#endif

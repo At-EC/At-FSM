@@ -4,23 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  **/
-
 #ifndef _PSM_H_
 #define _PSM_H_
 
-#include "typedef.h"
+#include "type_def.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-enum psm_result {
-    PSM_RESULT_PASS = 0u,
-    PSM_RESULT_INVALID_ARGUMENT,
-    PSM_RESULT_INVALID_DATA,
-    PSM_RESULT_FAULT_ERROR,
-};
-typedef u32_t psm_result_t;
+#define EOR_INVALID_ARGUMENT (-1)
+#define EOR_INVALID_DATA     (-2)
+#define EOR_FAULT_ERROR      (-3)
 
 enum psm_signal {
     PSM_SIGNAL_UNKNOWN = 0u,
@@ -68,17 +59,13 @@ typedef struct {
     pPsmTransducerFunc_t pTransucerFunc;
 } psm_state_manager_t;
 
-psm_result_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, psm_instance_t initInstance,
-                      pPsmTransducerFunc_t pTransucerFunc);
-psm_result_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance);
+i32_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, psm_instance_t initInstance,
+               pPsmTransducerFunc_t pTransucerFunc);
+i32_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance);
 const char_t *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
-psm_result_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
+i32_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
 psm_instance_t psm_inst_current_get(psm_state_manager_t *pStateManager);
-psm_result_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input);
+i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input);
 void *psm_transition(psm_state_manager_t *pStateManager, psm_instance_t next);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _PSM_H_ */

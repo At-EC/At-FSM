@@ -8,14 +8,6 @@
 #ifndef _BUILD_VERSION_H_
 #define _BUILD_VERSION_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#define AT_FSM_FW_VERSION "1.0.2"
-
-#ifdef __cplusplus
-}
-#endif
+#define AT_FSM_FW_VERSION "1.0.3"
 
 #endif

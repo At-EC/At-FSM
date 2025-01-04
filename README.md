@@ -214,7 +214,7 @@ After you implementing the PSM states init tables as above exmaple code, you sho
 ```c
 
 /* The HSM state entry function */
-static hsm_result_t hsm_state_210(hsm_state_input_t input)
+static i32_t hsm_state_210(hsm_state_input_t input)
 {
     switch(input.signal)
     {
