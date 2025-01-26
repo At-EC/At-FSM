@@ -66,7 +66,7 @@ i32_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pIni
                pHsmTransducerFunc_t pTransucerFunc);
 i32_t hsm_inst_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
 const char_t *hsm_inst_nameGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
-u32_t hsm_inst_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
+i32_t hsm_inst_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
 hsm_instance_t hsm_inst_middleware_get(hsm_state_manager_t *pStateManager);
 hsm_instance_t hsm_inst_current_get(hsm_state_manager_t *pStateManager);
 i32_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input);

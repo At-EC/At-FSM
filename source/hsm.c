@@ -83,7 +83,7 @@ const char_t *hsm_state_nameGet(hsm_state_manager_t *pStateManager, hsm_instance
  *
  * @return The value of state id number.
  */
-u32_t hsm_state_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
+i32_t hsm_state_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
