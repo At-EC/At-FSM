@@ -8,10 +8,6 @@
 #include "psm.h"
 #include "hsm.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* The PSM user specific signal */
 enum {
     PSM_SIGNAL_1 = PSM_SIGNAL_USER_DEFINE,
@@ -24,6 +20,7 @@ enum {
     PSM_INST_0 = 0,
     PSM_INST_1,
     PSM_INST_2,
+    PSM_INST_NUM,
 };
 
 /* The HSM user specific signal */
@@ -43,22 +40,23 @@ enum {
     HSM_INST_210,
     HSM_INST_10,
     HSM_INST_100,
+    HSM_INST_NUM,
 };
 
 static void* psm_state_1(psm_state_input_t input);
 static void* psm_state_2(psm_state_input_t input);
 static void* psm_state_3(psm_state_input_t input);
-static i32_t psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input);
+static signed int psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input);
 
-static i32_t hsm_state_0(hsm_state_input_t input);
-static i32_t hsm_state_1(hsm_state_input_t input);
-static i32_t hsm_state_2(hsm_state_input_t input);
-static i32_t hsm_state_20(hsm_state_input_t input);
-static i32_t hsm_state_21(hsm_state_input_t input);
-static i32_t hsm_state_210(hsm_state_input_t input);
-static i32_t hsm_state_10(hsm_state_input_t input);
-static i32_t hsm_state_100(hsm_state_input_t input);
-static i32_t hsm_transducer_handler(const hsm_state_t *pStateContext, hsm_instance_t from, hsm_instance_t to, hsm_state_input_t input);
+static signed int hsm_state_0(hsm_state_input_t input);
+static signed int hsm_state_1(hsm_state_input_t input);
+static signed int hsm_state_2(hsm_state_input_t input);
+static signed int hsm_state_20(hsm_state_input_t input);
+static signed int hsm_state_21(hsm_state_input_t input);
+static signed int hsm_state_210(hsm_state_input_t input);
+static signed int hsm_state_10(hsm_state_input_t input);
+static signed int hsm_state_100(hsm_state_input_t input);
+static signed int hsm_transducer_handler(const hsm_state_t *pStateContext, hsm_instance_t from, hsm_instance_t to, hsm_state_input_t input);
 
 /* The PSM states' init tables */
 static psm_state_t g_psm_state_init[] = {
@@ -131,13 +129,13 @@ static hsm_state_manager_t g_hsm_mngr_context = {0u};
 
 int main(void)
 {
-    psm_init(&g_psm_mngr_context, &g_psm_state_init[0], PSM_INST_0, psm_transducer_handler);
+    psm_init(&g_psm_mngr_context, &g_psm_state_init[0], PSM_INST_NUM, PSM_INST_0, psm_transducer_handler);
 
     psm_state_input_t data = {0};
     data.signal = PSM_SIGNAL_1;
     psm_activities(&g_psm_mngr_context, data);
 
-    hsm_init(&g_hsm_mngr_context, &g_hsm_state_init[0], HSM_INST_210, hsm_transducer_handler);
+    hsm_init(&g_hsm_mngr_context, &g_hsm_state_init[0], HSM_INST_NUM, HSM_INST_210, hsm_transducer_handler);
 
     hsm_state_input_t input = {0};
     input.signal = HSM_SIGNAL_INIT;
@@ -149,7 +147,7 @@ int main(void)
     while(1) {};
 }
 
-static i32_t psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input)
+static signed int psm_transducer_handler(const psm_state_t *pStateContext, psm_instance_t from, psm_instance_t to, psm_state_input_t input)
 {
 	if (pStateContext) {
 		printf("psm_transducer_handler: from %d to %d, signal: %d\n", from, to, input.signal);
@@ -250,7 +248,7 @@ static void* psm_state_3(psm_state_input_t input)
     return PSM_ACTION_DONE;
 }
 
-static i32_t hsm_transducer_handler(const hsm_state_t *pStateContext, hsm_instance_t from, hsm_instance_t to, hsm_state_input_t input)
+static signed int hsm_transducer_handler(const hsm_state_t *pStateContext, hsm_instance_t from, hsm_instance_t to, hsm_state_input_t input)
 {
 	if (pStateContext) {
 		printf("hsm_transducer_handler: from %d to %d, signal: %d\n", from, to, input.signal);
@@ -258,7 +256,7 @@ static i32_t hsm_transducer_handler(const hsm_state_t *pStateContext, hsm_instan
     return 0;
 }
 
-static i32_t hsm_state_0(hsm_state_input_t input)
+static signed int hsm_state_0(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -293,7 +291,7 @@ static i32_t hsm_state_0(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_1(hsm_state_input_t input)
+static signed int hsm_state_1(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -328,7 +326,7 @@ static i32_t hsm_state_1(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_2(hsm_state_input_t input)
+static signed int hsm_state_2(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -363,7 +361,7 @@ static i32_t hsm_state_2(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_20(hsm_state_input_t input)
+static signed int hsm_state_20(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -398,7 +396,7 @@ static i32_t hsm_state_20(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_21(hsm_state_input_t input)
+static signed int hsm_state_21(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -434,7 +432,7 @@ static i32_t hsm_state_21(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_210(hsm_state_input_t input)
+static signed int hsm_state_210(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -469,7 +467,7 @@ static i32_t hsm_state_210(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_10(hsm_state_input_t input)
+static signed int hsm_state_10(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -504,7 +502,7 @@ static i32_t hsm_state_10(hsm_state_input_t input)
     return 0;
 }
 
-static i32_t hsm_state_100(hsm_state_input_t input)
+static signed int hsm_state_100(hsm_state_input_t input)
 {
     switch(input.signal)
     {
@@ -538,7 +536,3 @@ static i32_t hsm_state_100(hsm_state_input_t input)
 
     return 0;
 }
-
-#ifdef __cplusplus
-}
-#endif

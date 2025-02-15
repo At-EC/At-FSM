@@ -7,7 +7,10 @@
 #ifndef _HSM_H_
 #define _HSM_H_
 
-#include "type_def.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 #define EOR_INVALID_ARGUMENT (-1)
 #define EOR_INVALID_DATA     (-2)
@@ -22,9 +25,9 @@ enum hsm_signal {
     HSM_SIGNAL_EXIT,
     HSM_SIGNAL_USER_DEFINE,
 };
-typedef u32_t hsm_signal_t;
+typedef unsigned int hsm_signal_t;
 
-typedef u16_t hsm_instance_t;
+typedef unsigned short hsm_instance_t;
 #define HSM_STATE_INSTANCE_ROOT    (0xFFFEu)
 #define HSM_STATE_INSTANCE_INVALID (0xFFFFu)
 
@@ -34,26 +37,26 @@ typedef struct {
     void *pUserContext;
 } hsm_state_input_t;
 
-typedef i32_t (*pEntryFunc_t)(hsm_state_input_t);
+typedef signed int (*pEntryFunc_t)(hsm_state_input_t);
 
 typedef struct hsm_state {
     struct hsm_state *pMasterState;
 
     hsm_instance_t instance;
 
-    u32_t id;
+    unsigned int id;
 
-    const char_t *pName;
+    const char *pName;
 
     pEntryFunc_t pEntryFunc;
 } hsm_state_t;
 
-typedef i32_t (*pHsmTransducerFunc_t)(const hsm_state_t *, hsm_instance_t, hsm_instance_t, hsm_state_input_t);
+typedef signed int (*pHsmTransducerFunc_t)(const hsm_state_t *, hsm_instance_t, hsm_instance_t, hsm_state_input_t);
 
 typedef struct {
     const hsm_state_t *pInitState;
 
-    u16_t number;
+    unsigned short number;
 
     hsm_instance_t current;
 
@@ -62,14 +65,14 @@ typedef struct {
     pHsmTransducerFunc_t pTransucerFunc;
 } hsm_state_manager_t;
 
-i32_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pInitStateList, hsm_instance_t initInstance,
-               pHsmTransducerFunc_t pTransucerFunc);
-i32_t hsm_inst_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
-const char_t *hsm_inst_nameGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
-i32_t hsm_inst_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
+signed int hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pInitStateList, unsigned short number,
+                    hsm_instance_t initInstance, pHsmTransducerFunc_t pTransucerFunc);
+signed int hsm_inst_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
+const char *hsm_inst_nameGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
+signed int hsm_inst_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance);
 hsm_instance_t hsm_inst_middleware_get(hsm_state_manager_t *pStateManager);
 hsm_instance_t hsm_inst_current_get(hsm_state_manager_t *pStateManager);
-i32_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input);
-i32_t hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next);
+signed int hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input);
+signed int hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next);
 
 #endif /* _HSM_H_ */

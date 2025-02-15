@@ -6,5 +6,4 @@ target_sources(kernel_include
 	PUBLIC
 	${KERNEL_PATH}/include/hsm.h
 	${KERNEL_PATH}/include/psm.h
-	${KERNEL_PATH}/include/type_def.h
 )

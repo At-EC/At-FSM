@@ -7,7 +7,10 @@
 #ifndef _PSM_H_
 #define _PSM_H_
 
-#include "type_def.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 #define EOR_INVALID_ARGUMENT (-1)
 #define EOR_INVALID_DATA     (-2)
@@ -19,9 +22,9 @@ enum psm_signal {
     PSM_SIGNAL_EXIT,
     PSM_SIGNAL_USER_DEFINE,
 };
-typedef u32_t psm_signal_t;
+typedef unsigned int psm_signal_t;
 
-typedef u16_t psm_instance_t;
+typedef unsigned short psm_instance_t;
 #define PSM_STATE_INSTANCE_INVALID (0xFFFFu)
 #define PSM_FAULT_ERROR            (0xFFFFFFFFu)
 #define PSM_ACTION_DONE            (NULL)
@@ -36,19 +39,19 @@ typedef void *(*pPsmEntryFunc_t)(psm_state_input_t);
 typedef struct psm_state {
     psm_instance_t instance;
 
-    u32_t id;
+    unsigned int id;
 
-    const char_t *pName;
+    const char *pName;
 
     pPsmEntryFunc_t pEntryFunc;
 } psm_state_t;
 
-typedef i32p_t (*pPsmTransducerFunc_t)(const psm_state_t *, psm_instance_t, psm_instance_t, psm_state_input_t);
+typedef signed int (*pPsmTransducerFunc_t)(const psm_state_t *, psm_instance_t, psm_instance_t, psm_state_input_t);
 
 typedef struct {
     const psm_state_t *pInitState;
 
-    u16_t number;
+    unsigned short number;
 
     psm_instance_t previous;
 
@@ -59,13 +62,13 @@ typedef struct {
     pPsmTransducerFunc_t pTransucerFunc;
 } psm_state_manager_t;
 
-i32_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, psm_instance_t initInstance,
-               pPsmTransducerFunc_t pTransucerFunc);
-i32_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance);
-const char_t *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
-i32_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
+signed int psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, unsigned short number,
+                    psm_instance_t initInstance, pPsmTransducerFunc_t pTransucerFunc);
+signed int psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance);
+const char *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
+signed int psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance);
 psm_instance_t psm_inst_current_get(psm_state_manager_t *pStateManager);
-i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input);
+signed int psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input);
 void *psm_transition(psm_state_manager_t *pStateManager, psm_instance_t next);
 
 #endif /* _PSM_H_ */

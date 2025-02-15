@@ -16,8 +16,8 @@
  *
  * @return The value of PSM init operaton result.
  */
-i32_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pInitStateList, hsm_instance_t initInstance,
-               pHsmTransducerFunc_t pTransucerFunc)
+signed int hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pInitStateList, unsigned short number,
+                    hsm_instance_t initInstance, pHsmTransducerFunc_t pTransucerFunc)
 {
     if (!pInitManagerContext) {
         return EOR_INVALID_ARGUMENT;
@@ -27,12 +27,8 @@ i32_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pIni
         return EOR_INVALID_ARGUMENT;
     }
 
-    if (DIMOF(pInitStateList) >= (hsm_signal_t)HSM_STATE_INSTANCE_INVALID) {
-        return EOR_INVALID_ARGUMENT;
-    }
-
     pInitManagerContext->pInitState = pInitStateList;
-    pInitManagerContext->number = DIMOF(pInitStateList);
+    pInitManagerContext->number = number;
     pInitManagerContext->current = HSM_STATE_INSTANCE_ROOT;
     pInitManagerContext->middleware = initInstance;
     pInitManagerContext->pTransucerFunc = pTransucerFunc;
@@ -48,7 +44,7 @@ i32_t hsm_init(hsm_state_manager_t *pInitManagerContext, const hsm_state_t *pIni
  *
  * @return The value of PSM_RESULT_PASS indicates the instance is valid.
  */
-i32_t hsm_state_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
+signed int hsm_state_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
@@ -64,7 +60,7 @@ i32_t hsm_state_isInvalid(hsm_state_manager_t *pStateManager, hsm_instance_t ins
  *
  * @return The value of state name string.
  */
-const char_t *hsm_state_nameGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
+const char *hsm_state_nameGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
 {
     if (!pStateManager) {
         return NULL;
@@ -83,7 +79,7 @@ const char_t *hsm_state_nameGet(hsm_state_manager_t *pStateManager, hsm_instance
  *
  * @return The value of state id number.
  */
-i32_t hsm_state_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
+signed int hsm_state_idGet(hsm_state_manager_t *pStateManager, hsm_instance_t instance)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
@@ -132,7 +128,7 @@ hsm_instance_t hsm_inst_current_get(hsm_state_manager_t *pStateManager)
  *
  * @return The value of operation result.
  */
-i32_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input)
+signed int hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
@@ -143,8 +139,8 @@ i32_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input
     hsm_state_t *pTmpTarget = NULL;
     hsm_state_t *pNewState = NULL;
     hsm_state_input_t sv_input = {0u};
-    b_t root = false;
-    i32_t ret = HSM_ACTION_DONE;
+    bool root = false;
+    signed int ret = HSM_ACTION_DONE;
 
     if (pStateManager->current == HSM_STATE_INSTANCE_ROOT) {
         pTmpState = (hsm_state_t *)&pStateManager->pInitState[pStateManager->middleware];
@@ -239,7 +235,7 @@ i32_t hsm_activities(hsm_state_manager_t *pStateManager, hsm_state_input_t input
  *
  * @return The value of operation result.
  */
-i32_t hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next)
+signed int hsm_transition(hsm_state_manager_t *pStateManager, hsm_instance_t next)
 {
     if (next <= pStateManager->number) {
         return EOR_INVALID_ARGUMENT;

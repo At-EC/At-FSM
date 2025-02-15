@@ -72,6 +72,7 @@ enum {
     PSM_INST_0 = 0,
     PSM_INST_1,
     PSM_INST_2,
+	PSM_INST_NUM,
 };
 
 /* The PSM states' init tables */
@@ -156,6 +157,7 @@ enum {
     HSM_INST_210,
     HSM_INST_10,
     HSM_INST_100,
+	HSM_INST_NUM,
 };
 
 /* The HSM states' init tables */
@@ -214,7 +216,7 @@ After you implementing the PSM states init tables as above exmaple code, you sho
 ```c
 
 /* The HSM state entry function */
-static i32_t hsm_state_210(hsm_state_input_t input)
+static signed init hsm_state_210(hsm_state_input_t input)
 {
     switch(input.signal)
     {

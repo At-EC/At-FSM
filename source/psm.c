@@ -16,8 +16,8 @@
  *
  * @return The value of PSM init operaton result.
  */
-i32_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, psm_instance_t initInstance,
-               pPsmTransducerFunc_t pTransucerFunc)
+signed int psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateList, unsigned short number,
+                    psm_instance_t initInstance, pPsmTransducerFunc_t pTransucerFunc)
 {
     if (!pInitManager) {
         return EOR_INVALID_ARGUMENT;
@@ -26,13 +26,8 @@ i32_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateL
     if (!pInitStateList) {
         return EOR_INVALID_ARGUMENT;
     }
-
-    if (DIMOF(pInitStateList) > PSM_STATE_INSTANCE_INVALID) {
-        return EOR_INVALID_ARGUMENT;
-    }
-
     pInitManager->pInitState = pInitStateList;
-    pInitManager->number = DIMOF(pInitStateList);
+    pInitManager->number = number;
     pInitManager->current = initInstance;
     pInitManager->previous = PSM_STATE_INSTANCE_INVALID;
     pInitManager->exit_signal = PSM_SIGNAL_UNKNOWN;
@@ -49,7 +44,7 @@ i32_t psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitStateL
  *
  * @return The value of 0 indicates the instance is valid.
  */
-i32_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance)
+signed int psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_t instance)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
@@ -65,7 +60,7 @@ i32_t psm_state_inst_isInvalid(psm_state_manager_t *pStateManager, psm_instance_
  *
  * @return The value of state name string.
  */
-const char_t *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance_t instance)
+const char *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance_t instance)
 {
     if (!pStateManager) {
         return NULL;
@@ -84,7 +79,7 @@ const char_t *psm_state_nameGet(psm_state_manager_t *pStateManager, psm_instance
  *
  * @return The value of state id number.
  */
-i32_t psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance)
+signed int psm_state_idGet(psm_state_manager_t *pStateManager, psm_instance_t instance)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
@@ -118,7 +113,7 @@ psm_instance_t psm_inst_current_get(psm_state_manager_t *pStateManager)
  *
  * @return The value of operation result.
  */
-i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input)
+signed int psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input)
 {
     if (!pStateManager) {
         return EOR_INVALID_ARGUMENT;
@@ -130,7 +125,7 @@ i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input
             pStateManager->exit_signal = input.signal;
             input.signal = PSM_SIGNAL_EXIT;
             if (pStateManager->previous != PSM_STATE_INSTANCE_INVALID) {
-                if ((u32_t)pStateManager->pInitState[pStateManager->previous].pEntryFunc(input) == PSM_FAULT_ERROR) {
+                if ((unsigned int)pStateManager->pInitState[pStateManager->previous].pEntryFunc(input) == PSM_FAULT_ERROR) {
                     break;
                 }
             }
@@ -144,7 +139,7 @@ i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input
 
             input.signal = PSM_SIGNAL_ENTRY;
             if (pStateManager->previous == PSM_STATE_INSTANCE_INVALID) {
-                if ((u32_t)pStateManager->pInitState[pStateManager->current].pEntryFunc(input) == PSM_FAULT_ERROR) {
+                if ((unsigned int)pStateManager->pInitState[pStateManager->current].pEntryFunc(input) == PSM_FAULT_ERROR) {
                     break;
                 }
                 input.signal = pStateManager->exit_signal;
@@ -154,9 +149,9 @@ i32_t psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t input
         }
 
         pNextEntry = (pPsmEntryFunc_t)pStateManager->pInitState[pStateManager->current].pEntryFunc(input);
-    } while (pNextEntry && ((u32_t)pNextEntry != PSM_FAULT_ERROR));
+    } while (pNextEntry && ((unsigned int)pNextEntry != PSM_FAULT_ERROR));
 
-    return (((u32_t)pNextEntry != PSM_FAULT_ERROR) ? (0) : (EOR_FAULT_ERROR));
+    return (((unsigned int)pNextEntry != PSM_FAULT_ERROR) ? (0) : (EOR_FAULT_ERROR));
 }
 
 /**
