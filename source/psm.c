@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  **/
+#include <stdint.h>
 #include "psm.h"
 
 /**
@@ -26,6 +27,11 @@ signed int psm_init(psm_state_manager_t *pInitManager, const psm_state_t *pInitS
     if (!pInitStateList) {
         return EOR_INVALID_ARGUMENT;
     }
+
+    if (initInstance >= number) {
+        return EOR_INVALID_ARGUMENT;
+    }
+
     pInitManager->pInitState = pInitStateList;
     pInitManager->number = number;
     pInitManager->current = initInstance;
@@ -125,7 +131,8 @@ signed int psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t 
             pStateManager->exit_signal = input.signal;
             input.signal = PSM_SIGNAL_EXIT;
             if (pStateManager->previous != PSM_STATE_INSTANCE_INVALID) {
-                if ((unsigned int)pStateManager->pInitState[pStateManager->previous].pEntryFunc(input) == PSM_FAULT_ERROR) {
+                void *ret = pStateManager->pInitState[pStateManager->previous].pEntryFunc(input);
+                if (ret == (void *)(uintptr_t)PSM_FAULT_ERROR) {
                     break;
                 }
             }
@@ -139,7 +146,8 @@ signed int psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t 
 
             input.signal = PSM_SIGNAL_ENTRY;
             if (pStateManager->previous == PSM_STATE_INSTANCE_INVALID) {
-                if ((unsigned int)pStateManager->pInitState[pStateManager->current].pEntryFunc(input) == PSM_FAULT_ERROR) {
+                void *ret = pStateManager->pInitState[pStateManager->current].pEntryFunc(input);
+                if (ret == (void *)(uintptr_t)PSM_FAULT_ERROR) {
                     break;
                 }
                 input.signal = pStateManager->exit_signal;
@@ -149,9 +157,9 @@ signed int psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t 
         }
 
         pNextEntry = (pPsmEntryFunc_t)pStateManager->pInitState[pStateManager->current].pEntryFunc(input);
-    } while (pNextEntry && ((unsigned int)pNextEntry != PSM_FAULT_ERROR));
+    } while (pNextEntry && (pNextEntry != (void *)(uintptr_t)PSM_FAULT_ERROR));
 
-    return (((unsigned int)pNextEntry != PSM_FAULT_ERROR) ? (0) : (EOR_FAULT_ERROR));
+    return ((pNextEntry != (void *)(uintptr_t)PSM_FAULT_ERROR) ? (0) : (EOR_FAULT_ERROR));
 }
 
 /**
@@ -164,8 +172,12 @@ signed int psm_activities(psm_state_manager_t *pStateManager, psm_state_input_t 
  */
 void *psm_transition(psm_state_manager_t *pStateManager, psm_instance_t next)
 {
-    if (pStateManager->number >= next) {
-        return (void *)PSM_FAULT_ERROR;
+    if (!pStateManager) {
+        return (void *)(uintptr_t)PSM_FAULT_ERROR;
+    }
+
+    if (next >= pStateManager->number) {
+        return (void *)(uintptr_t)PSM_FAULT_ERROR;
     }
 
     pStateManager->current = next;
